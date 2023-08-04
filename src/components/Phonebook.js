@@ -1,36 +1,29 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import ContactForm from "./Phonebook/ContatForm/Contactform";
 import ContactList from "./Contactlist";
 import Filter from "./Filter";
 import PropTypes from "prop-types";
 
+const Phonebook = () => {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState("");
 
-class Phonebook extends Component {
-  state = {
-    contacts: [],
-    filter: "",
-  };
-
-  componentDidMount() {
+  useEffect(() => {
     const storedContacts = localStorage.getItem("contacts");
     if (storedContacts) {
-      this.setState({ contacts: JSON.parse(storedContacts) });
+      setContacts(JSON.parse(storedContacts));
     }
-  }
+  }, []);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.contacts !== this.state.contacts) {
-      localStorage.setItem("contacts", JSON.stringify(this.state.contacts));
-    }
-  }
+  useEffect(() => {
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+  }, [contacts]);
 
-  handleChangeFilter = (event) => {
-    this.setState({ filter: event.target.value });
+  const handleChangeFilter = (event) => {
+    setFilter(event.target.value);
   };
 
-  handleSubmit = (newContact) => {
-    const { contacts } = this.state;
-
+  const handleSubmit = (newContact) => {
     const contactExists = contacts.some(
       (contact) => contact.name.toLowerCase() === newContact.name.toLowerCase()
     );
@@ -40,35 +33,30 @@ class Phonebook extends Component {
       return;
     }
 
-    this.setState((prevState) => ({
-      contacts: [...prevState.contacts, newContact],
-    }));
+    setContacts((prevContacts) => [...prevContacts, newContact]);
   };
 
-  handleDelete = (id) => {
-    this.setState((prevState) => ({
-      contacts: prevState.contacts.filter((contact) => contact.id !== id),
-    }));
+  const handleDelete = (id) => {
+    setContacts((prevContacts) =>
+      prevContacts.filter((contact) => contact.id !== id)
+    );
   };
 
-  render() {
-    const { contacts, filter } = this.state;
+  const filteredContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
-    const filteredContacts = contacts.filter((contact) =>
-      contact.name.toLowerCase().includes(filter.toLowerCase())
-    );
+  return (
+    <div>
+      <h1>Phonebook</h1>
+      <ContactForm handleSubmit={handleSubmit} />
+      <h2>Contacts</h2>
+      <Filter filter={filter} handleChangeFilter={handleChangeFilter} />
+      <ContactList contacts={filteredContacts} handleDelete={handleDelete} />
+    </div>
+  );
+};
 
-    return (
-      <div>
-        <h1>Phonebook</h1>
-        <ContactForm handleSubmit={this.handleSubmit} />
-        <h2>Contacts</h2>
-        <Filter filter={filter} handleChangeFilter={this.handleChangeFilter} />
-        <ContactList contacts={filteredContacts} handleDelete={this.handleDelete} />
-      </div>
-    );
-  }
-}
 Phonebook.propTypes = {
   contacts: PropTypes.arrayOf(
     PropTypes.shape({
@@ -81,3 +69,4 @@ Phonebook.propTypes = {
 };
 
 export default Phonebook;
+
