@@ -2,29 +2,28 @@ import React, { useState, useEffect } from "react";
 import ContactForm from "./Phonebook/ContatForm/Contactform";
 import ContactList from "./Contactlist";
 import Filter from "./Filter";
-import PropTypes from "prop-types";
 
 const Phonebook = () => {
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState(null);
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    const storedContacts = localStorage.getItem("contacts");
-    if (storedContacts) {
-      setContacts(JSON.parse(storedContacts));
-    }
-  }, []);
+    const fetchContacts = async () => {
+      const storedContacts = localStorage.getItem("contacts");
+      if (storedContacts) {
+        setContacts(JSON.parse(storedContacts));
+      }
+    };
 
-  useEffect(() => {
-    localStorage.setItem("contacts", JSON.stringify(contacts));
-  }, [contacts]);
+    fetchContacts();
+  }, []);
 
   const handleChangeFilter = (event) => {
     setFilter(event.target.value);
   };
 
   const handleSubmit = (newContact) => {
-    const contactExists = contacts.some(
+    const contactExists = contacts?.some(
       (contact) => contact.name.toLowerCase() === newContact.name.toLowerCase()
     );
 
@@ -33,18 +32,20 @@ const Phonebook = () => {
       return;
     }
 
-    setContacts((prevContacts) => [...prevContacts, newContact]);
+    setContacts((prevContacts) => (prevContacts ? [...prevContacts, newContact] : [newContact]));
   };
 
   const handleDelete = (id) => {
-    setContacts((prevContacts) =>
-      prevContacts.filter((contact) => contact.id !== id)
-    );
+    setContacts((prevContacts) => (prevContacts ? prevContacts.filter((contact) => contact.id !== id) : null));
   };
 
-  const filteredContacts = contacts.filter((contact) =>
+  const filteredContacts = contacts?.filter((contact) =>
     contact.name.toLowerCase().includes(filter.toLowerCase())
   );
+
+  if (contacts === null) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
@@ -56,7 +57,6 @@ const Phonebook = () => {
     </div>
   );
 };
-
 Phonebook.propTypes = {
   contacts: PropTypes.arrayOf(
     PropTypes.shape({
@@ -69,4 +69,3 @@ Phonebook.propTypes = {
 };
 
 export default Phonebook;
-
