@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ContactForm from "./Phonebook/ContatForm/Contactform";
 import ContactList from "./Contactlist";
 import Filter from "./Filter";
+import PropTypes from "prop-types";
 
 const Phonebook = () => {
   const [contacts, setContacts] = useState(null);
