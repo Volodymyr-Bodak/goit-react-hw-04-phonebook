@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ContactForm from "./Phonebook/ContactForm/ContactForm";
-import ContactList from "./ContactList";
+import ContactList from "./Contactlist";
 import Filter from "./Filter";
 import PropTypes from "prop-types";
 
