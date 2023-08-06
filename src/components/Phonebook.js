@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import ContactForm from "./Phonebook/ContatForm/Contactform";
-import ContactList from "./Contactlist";
+import React, { useState, useEffect } from "react";
+import ContactForm from "./Phonebook/ContactForm/ContactForm";
+import ContactList from "./ContactList";
 import Filter from "./Filter";
 import PropTypes from "prop-types";
 
@@ -10,6 +10,10 @@ const Phonebook = () => {
     return storedContacts ? JSON.parse(storedContacts) : [];
   });
   const [filter, setFilter] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+  }, [contacts]);
 
   const handleChangeFilter = (event) => {
     setFilter(event.target.value);
@@ -59,3 +63,4 @@ Phonebook.propTypes = {
 };
 
 export default Phonebook;
+
